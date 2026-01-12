@@ -1,4 +1,11 @@
 package com.backend.web.dto;
 
-public record AuthResponse() {
+import com.backend.web.enums.Role;
+
+public record AuthResponse(
+        String id,
+        String email,
+        Role role,
+        String accessToken
+) {
 }

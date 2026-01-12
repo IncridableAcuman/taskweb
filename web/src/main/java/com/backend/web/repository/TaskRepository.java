@@ -1,4 +1,7 @@
 package com.backend.web.repository;
 
-public interface TaskRepository {
+import com.backend.web.entity.Task;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface TaskRepository extends MongoRepository<Task,String> {
 }
