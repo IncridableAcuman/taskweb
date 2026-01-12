@@ -1,10 +1,14 @@
+server:
+  port: ${PORT}
+
+
 spring:
   data:
     mongodb:
-      url: mongodb://localhost:27017/tasks
+      url: ${MONGO_URL}
 
 
 jwt:
-  secret: r9f8j2kPqW3xZ7mN5vL8cT4rY6uB2hJ0kM9xQ3wE5tA1sD7fG9iR2oP4lU6y
-  access_time: 900000 # 15 min
-  refresh_time: 604800000 # 7 days
+  secret: ${JWT_SECRET}
+  access_time: ${JWT_ACCESS_TIME}
+  refresh_time: ${JWT_REFRESH_TIME}
