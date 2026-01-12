@@ -5,8 +5,12 @@ import com.backend.web.enums.Role;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Document(collection = "users")
@@ -15,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class User {
+public class User implements UserDetails {
     @Id
     private String id;
 
@@ -35,4 +39,8 @@ public class User {
 
     private List<TaskDto> tasks;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_"+role.name()));
+    }
 }
