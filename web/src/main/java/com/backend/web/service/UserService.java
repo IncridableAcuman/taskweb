@@ -2,6 +2,7 @@ package com.backend.web.service;
 
 import com.backend.web.dto.RegisterRequest;
 import com.backend.web.entity.User;
+import com.backend.web.enums.Role;
 import com.backend.web.exception.BadRequestException;
 import com.backend.web.exception.NotFoundException;
 import com.backend.web.repository.UserRepository;
@@ -27,6 +28,7 @@ public class UserService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setUsername(request.getUsername());
+        user.setRole(Role.USER);
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         return saveUser(user);

@@ -44,19 +44,26 @@ public class AuthService {
     @Transactional
     public AuthResponse login(LoginRequest request,HttpServletResponse response){
         User user = userService.findByEmail(request.getEmail());
-        if (!passwordEncoder.matches(user.getPassword(), request.getPassword())){
+        if (!passwordEncoder.matches(request.getPassword(),user.getPassword())){
             throw new BadRequestException("Incorrect password!");
         }
         return partSection(user,response);
     }
     @Transactional
     public AuthResponse refresh(String refreshToken,HttpServletResponse response){
-        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)){
+        if (!jwtUtil.validateToken(refreshToken)){
             throw new BadRequestException("Invalid token or expired!");
         }
         String email = jwtUtil.extractEmail(refreshToken);
         User user = userService.findByEmail(email);
         return partSection(user,response);
+    }
+    @Transactional
+    public void logout(String refreshToken,HttpServletResponse response){
+        String email = jwtUtil.extractEmail(refreshToken);
+        User user = userService.findByEmail(email);
+        tokenService.removeToken(user);
+        cookieUtil.clearCooke(response);
     }
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request){
@@ -68,7 +75,7 @@ public class AuthService {
     }
     @Transactional
     public void resetPassword(ResetPasswordRequest request){
-        if (request.getToken() == null || !jwtUtil.validateToken(request.getToken())){
+        if (!jwtUtil.validateToken(request.getToken())){
             throw new BadRequestException("Invalid token or expired!");
         }
         String email = jwtUtil.extractEmail(request.getToken());

@@ -14,7 +14,7 @@ public class CookieUtil {
         Cookie cookie = new Cookie("refreshToken",refreshToken);
         cookie.setHttpOnly(true);
         cookie.setValue(refreshToken);
-        cookie.setMaxAge(refreshTime);
+        cookie.setMaxAge(refreshTime/1000);
         cookie.setSecure(false);
         cookie.setPath("/");
         response.addCookie(cookie);

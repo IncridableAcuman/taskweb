@@ -32,7 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-        email = jwtUtil.extractEmail(jwt);
+        try {
+            email = jwtUtil.extractEmail(jwt);
+        } catch (Exception e) {
+            filterChain.doFilter(request,response);
+            return;
+        }
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = loadUserDetailsService.loadUserByUsername(email);
             if (jwtUtil.validateToken(jwt) && email.equals(userDetails.getUsername())){
