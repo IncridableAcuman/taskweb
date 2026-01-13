@@ -3,7 +3,6 @@ package com.backend.web.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,7 +10,6 @@ public class CookieUtil {
     @Value("${jwt.refresh_time}")
     private int refreshTime;
 
-    @Bean
     public void addCookie(String refreshToken, HttpServletResponse response){
         Cookie cookie = new Cookie("refreshToken",refreshToken);
         cookie.setHttpOnly(true);
@@ -21,7 +19,7 @@ public class CookieUtil {
         cookie.setPath("/");
         response.addCookie(cookie);
     }
-    @Bean
+
     public void clearCooke(HttpServletResponse response){
         Cookie cookie = new Cookie("refreshToken","");
         cookie.setHttpOnly(true);
