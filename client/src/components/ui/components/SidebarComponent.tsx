@@ -35,7 +35,7 @@ const SidebarComponent = () => {
             <Sidebar>
                 <SidebarContent>
                     <SidebarGroup>
-                        <SidebarGroupLabel>SUS Task</SidebarGroupLabel>
+                        <SidebarGroupLabel className="text-lg font-semibold border-b my-4">SUS Task</SidebarGroupLabel>
                         <SidebarGroupContent>
                             {
                                 items.map((item, index) => (
