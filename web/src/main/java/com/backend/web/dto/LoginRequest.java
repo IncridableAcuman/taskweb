@@ -7,10 +7,11 @@ import lombok.Data;
 
 @Data
 public class LoginRequest {
-    @NotBlank(message = "Username must be required")
-    @Size(min = 3,max = 50,message = "Username must be between 3 & 50 character")
-    private String username;
 
     @Email
     private String email;
+
+    @NotBlank(message = "Password must be required")
+    @Size(min = 8,max = 255,message = "Password must be between 8 & 255 character")
+    private String password;
 }
