@@ -8,7 +8,7 @@ const Home = () => {
   const [sheetOpen,setSheetOpen] = useState(false);
   return (
     <>
-      <h1 className="text-lg md:text-2xl font-semibold">Todo List</h1>
+      <h1 className="text-xl md:text-2xl font-semibold">Todo List</h1>
       <TaskRadioGroup />
       <div className="pt-5">
         <TaskList sheetOpen={setSheetOpen} />
