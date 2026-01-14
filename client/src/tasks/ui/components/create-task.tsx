@@ -6,7 +6,7 @@ import { Tooltip } from "@/components/ui/tooltip"
 import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip"
 import { Plus } from "lucide-react"
 
-const TaskSheet = ({sheetOpen,setSheetOpen}:{sheetOpen:boolean,setSheetOpen:(val:boolean)=>void}) => {
+const CreateTask = ({sheetOpen,setSheetOpen}:{sheetOpen:boolean,setSheetOpen:(val:boolean)=>void}) => {
     return (
         <>
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -48,4 +48,4 @@ const TaskSheet = ({sheetOpen,setSheetOpen}:{sheetOpen:boolean,setSheetOpen:(val
     )
 }
 
-export default TaskSheet
+export default CreateTask
