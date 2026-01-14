@@ -3,10 +3,12 @@ package com.backend.web.entity;
 import com.backend.web.enums.TaskPriority;
 import com.backend.web.enums.TaskStatus;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Document(collection = "tasks")
@@ -29,10 +31,14 @@ public class Task {
 
     private List<String> assignedTo;
 
-    private LocalDateTime dueDate;
+    private List<String> subtasks;
 
+    @CreatedDate
+    private LocalDate dueDate;
+
+    @LastModifiedDate
     private String userId;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
 }

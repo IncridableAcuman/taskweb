@@ -3,7 +3,7 @@ package com.backend.web.dto;
 import com.backend.web.enums.TaskPriority;
 import com.backend.web.enums.TaskStatus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public record TaskResponse(
@@ -13,9 +13,10 @@ public record TaskResponse(
         String userId,
         TaskStatus status,
         TaskPriority priority,
-        LocalDateTime dueDate,
+        LocalDate dueDate,
         List<String> assignedTo,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        List<String> subtasks,
+        LocalDate createdAt,
+        LocalDate updatedAt
 ) {
 }

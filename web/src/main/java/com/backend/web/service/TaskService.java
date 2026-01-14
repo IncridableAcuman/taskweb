@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -32,6 +32,7 @@ public class TaskService {
                 task.getPriority(),
                 task.getDueDate(),
                 task.getAssignedTo(),
+                task.getSubtasks(),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );
@@ -50,8 +51,9 @@ public class TaskService {
         task.setUserId(user.getId());
         task.setDueDate(request.getDueDate());
         task.setAssignedTo(request.getAssignedTo());
-        task.setUpdatedAt(LocalDateTime.now());
-        task.setCreatedAt(LocalDateTime.now());
+        task.setCreatedAt(LocalDate.now());
+        task.setUpdatedAt(LocalDate.now());
+        task.setSubtasks(request.getSubtasks());
         task = taskRepository.save(task);
         return taskResponse(task);
     }
@@ -85,6 +87,8 @@ public class TaskService {
         task.setPriority(request.getPriority());
         task.setDueDate(request.getDueDate());
         task.setAssignedTo(request.getAssignedTo());
+        task.setSubtasks(request.getSubtasks());
+        task.setUpdatedAt(LocalDate.now());
         taskRepository.save(task);
         return taskResponse(task);
     }
@@ -93,9 +97,10 @@ public class TaskService {
     public void removeTask(String id){
         Task task = taskRepository.findById(id).orElseThrow(()->new NotFoundException("Task not found"));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        assert authentication != null;
-        User user = (User) authentication.getPrincipal();
-        assert user != null;
+        if (authentication == null || !(authentication.getPrincipal() instanceof User user)){
+            throw new UnAuthorizationException("Unauthorized!");
+        }
+         user = (User) authentication.getPrincipal();
         if (!user.getId().equals(task.getUserId())){
             throw new BadRequestException("Only author can delete this task!");
         }
