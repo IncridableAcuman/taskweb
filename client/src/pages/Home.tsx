@@ -1,7 +1,7 @@
+import TaskSheet from "@/tasks/ui/components/task-form";
 import TaskRadioGroup from "@/tasks/ui/components/radio-group"
 import TaskList from "@/tasks/ui/pages/TaskList"
 import { useState } from "react"
-import ViewTask from "@/tasks/ui/components/view-task"
 
 
 const Home = () => {
@@ -12,10 +12,10 @@ const Home = () => {
       <h1 className="text-xl md:text-2xl font-semibold">Todo List</h1>
       <TaskRadioGroup active={active} setActive={setActive} />
       <div className="pt-5">
-        <TaskList sheetOpen={setSheetOpen} />
+        <TaskList />
       </div>
       <div className="fixed bottom-5 right-3">
-        <ViewTask sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} />
+        <TaskSheet sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} />
       </div>
     </>
   )

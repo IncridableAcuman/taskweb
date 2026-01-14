@@ -2,18 +2,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Textarea } from "@/components/ui/textarea"
 import { Tooltip } from "@/components/ui/tooltip"
 import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip"
 import { Plus } from "lucide-react"
 
-const CreateTask = ({sheetOpen,setSheetOpen}:{sheetOpen:boolean,setSheetOpen:(val:boolean)=>void}) => {
+const TaskForm = ({sheetOpen,setSheetOpen}:{sheetOpen:boolean,setSheetOpen:(val:boolean)=>void}) => {
     return (
         <>
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                 <SheetTrigger asChild>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button className="rounded-full cursor-pointer shadow-md" onClick={()=>setSheetOpen(true)}>
+                            <Button className="rounded-full cursor-pointer shadow-md"
+                             onClick={()=>setSheetOpen(true)}>
                                 <Plus />
                             </Button>
                         </TooltipTrigger>
@@ -28,12 +30,12 @@ const CreateTask = ({sheetOpen,setSheetOpen}:{sheetOpen:boolean,setSheetOpen:(va
                     </SheetHeader>
                     <div className="grid flex-1 auto-rows-min gap-6 px-4">
                         <div className="grid gap-3">
-                            <Label htmlFor="sheet-demo-name">Name</Label>
-                            <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
+                            <Label htmlFor="title">Title</Label>
+                            <Input id="title" defaultValue="Your task title" />
                         </div>
                         <div className="grid gap-3">
-                            <Label htmlFor="sheet-demo-username">Username</Label>
-                            <Input id="sheet-demo-username" defaultValue="@peduarte" />
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea id="description" defaultValue="Something content" />
                         </div>
                     </div>
                     <SheetFooter>
@@ -48,4 +50,4 @@ const CreateTask = ({sheetOpen,setSheetOpen}:{sheetOpen:boolean,setSheetOpen:(va
     )
 }
 
-export default CreateTask
+export default TaskForm

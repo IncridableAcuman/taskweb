@@ -3,10 +3,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
-const ViewTask = ({sheetOpen,setSheetOpen}:{sheetOpen:boolean,setSheetOpen:(val:boolean)=>void}) => {
+const ViewTask = () => {
   return (
     <>
-    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+    <Sheet>
         <SheetTrigger asChild>View</SheetTrigger>
         <SheetContent>
             <SheetHeader>

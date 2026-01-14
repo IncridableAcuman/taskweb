@@ -2,7 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Bell, Calendar, Star } from "lucide-react"
 import { useState } from "react"
 
-const TaskList = ({ sheetOpen }: { sheetOpen: (arg0: boolean) => void }) => {
+const TaskList = () => {
     const [active,setActive] = useState(false);
     return (
         <>
@@ -13,7 +13,7 @@ const TaskList = ({ sheetOpen }: { sheetOpen: (arg0: boolean) => void }) => {
                     <div className="space-y-2">
                         <h1 className="flex items-center gap-3">Sheet Title Design homepage layout <span> <Star size={18} onClick={()=>setActive(!active)}
                          className={`cursor-pointer transition-colors ${active ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`} /> </span></h1>
-                        <div className="" onClick={() => sheetOpen(true)}>
+                        <div className="">
                             <div className="block md:hidden">
                                 <div className=" text-xs flex items-center gap-2">
                                     <p className="bg-sky-200 text-sky-600 p-1 rounded">In Progress</p>
@@ -34,7 +34,7 @@ const TaskList = ({ sheetOpen }: { sheetOpen: (arg0: boolean) => void }) => {
                         </div>
                     </div>
                 </div>
-                <div className="hidden md:block" onClick={() => sheetOpen(true)}>
+                <div className="hidden md:block">
                     <div className=" text-xs flex items-center gap-2">
                         <p className="bg-sky-200 text-sky-600 p-1 rounded">In Progress</p>
                         <p className="bg-amber-800 text-white p-1 rounded">High</p>
