@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 
-const ViewTask = () => {
+const ViewTask = ({view,setView}:{view:boolean,setView:(view:boolean)=>void}) => {
   return (
     <>
-    <Sheet>
-        <SheetTrigger asChild>View</SheetTrigger>
+    <Sheet open={view} onOpenChange={setView}>
         <SheetContent>
             <SheetHeader>
                 <SheetTitle>Your Task Name</SheetTitle>
