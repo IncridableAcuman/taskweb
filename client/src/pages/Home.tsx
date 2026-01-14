@@ -6,10 +6,11 @@ import { useState } from "react"
 
 const Home = () => {
   const [sheetOpen,setSheetOpen] = useState(false);
+  const [active, setActive] = useState<"list" | "panel">("list");
   return (
     <>
       <h1 className="text-xl md:text-2xl font-semibold">Todo List</h1>
-      <TaskRadioGroup />
+      <TaskRadioGroup active={active} setActive={setActive} />
       <div className="pt-5">
         <TaskList sheetOpen={setSheetOpen} />
       </div>
