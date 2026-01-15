@@ -1,17 +1,35 @@
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Plus } from "lucide-react"
+import TaskSchema from "@/tasks/schema/task.schema"
+import { Plus, X } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { useState } from "react"
 
 const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpen: (val: boolean) => void }) => {
-    const [dueDate, setDueDate] = useState<Date | undefined>(new Date());
+    const [assignedInput, setAssignedInput] = useState("");
+    const [subtasks, setsubtasks] = useState("");
+    const form = useForm<z.input<typeof TaskSchema>>({
+        resolver: zodResolver(TaskSchema),
+        defaultValues: {
+            title: "",
+            description: "",
+            status: "TODO",
+            priority: "MEDIUM",
+            assignedTo: [],
+            subtasks: [],
+        },
+    })
+
+
     return (
         <>
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -29,101 +47,263 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                 <SheetContent>
                     <SheetHeader>
                         <SheetTitle>Add New Task </SheetTitle>
+                        <SheetDescription>Create and complete a task</SheetDescription>
                     </SheetHeader>
-                    <div className="grid flex-1 auto-rows-min gap-6 px-4">
-                        {/* title */}
-                        <div className="grid gap-3">
-                            <Label htmlFor="title">Title</Label>
-                            <Input id="title" placeholder="Your task title" />
-                        </div>
-                        {/* description */}
-                        <div className="grid gap-3">
-                            <Label htmlFor="description">Description</Label>
-                            <Textarea id="description" placeholder="Something content" />
-                        </div>
-                        {/* DueDate */}
-                        <div className="grid gap-3">
-                            <Label htmlFor="description">Due Date</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={'outline'}
-                                        className="w-full justify-start text-left font-normal"
-                                    >Select a date</Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                        mode="single"
-                                        selected={dueDate}
-                                        onSelect={(date) => setDueDate(date)}
-                                        initialFocus
-                                        disabled={(date) => date < new Date()}
+                    <Form {...form}>
+                        <form>
+                            <div className="grid flex-1 auto-rows-min gap-6 px-4">
+                                {/* title */}
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="title"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input id="title" placeholder="Your task title" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                        {/* assigned to */}
-                        <div className="grid gap-3">
-                            <Label htmlFor="assignedTo">Assigned To</Label>
-                            <div className="flex items-center gap-2">
-                                <Input id="assignedTo" placeholder="Enter user name" />
-                                <Button variant={'outline'} className="cursor-pointer shadow">
-                                    <Plus size={20} />
-                                </Button>
+                                </div>
+                                {/* description */}
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="description"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Textarea id="description" placeholder="Something content" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                {/* DueDate */}
+                                <div className="grid gap-3">
+                                    {/* DUE DATE */}
+                                    <FormField
+                                        control={form.control}
+                                        name="dueDate"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button variant="outline" className="justify-start">
+                                                                {field.value
+                                                                    ? field.value.toDateString()
+                                                                    : "Select a date"}
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="p-0">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={field.value}
+                                                            onSelect={field.onChange}
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                {/* assigned to */}
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="assignedTo"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                {/* chips */}
+                                                <div className="flex flex-wrap gap-2">
+                                                    {field.value.map((user, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="flex items-center gap-1 rounded-full border px-3 py-1 text-xs"
+                                                        >
+                                                            {user}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    if(!assignedInput.trim()) return;
+                                                                    if(assignedInput.length>=5) return;
+                                                                    field.onChange(
+                                                                        field.value.filter((_, i) => i !== index)
+                                                                    )
+                                                                }
+
+                                                                }
+                                                            >
+                                                                <X className="h-3 w-3" />
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                </div>
+
+                                                {/* input + plus */}
+                                                <div className="flex items-center gap-2">
+                                                    <Input
+                                                        placeholder="Enter user name"
+                                                        value={assignedInput}
+                                                        onChange={(e) => setAssignedInput(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") {
+                                                                e.preventDefault()
+                                                                if(assignedInput.length>=5) return;
+                                                                if (!assignedInput.trim()) return
+                                                                field.onChange([...field.value, assignedInput.trim()])
+                                                                setAssignedInput("")
+                                                            }
+                                                        }}
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() => {
+                                                            if (!assignedInput.trim()) return
+                                                            field.onChange([...field.value, assignedInput.trim()])
+                                                            setAssignedInput("")
+                                                        }}
+                                                    >
+                                                        <Plus size={18} />
+                                                    </Button>
+                                                </div>
+
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                </div>
+                                {/* tags */}
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="subtasks"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                {/* chips */}
+                                                <div className="flex flex-wrap gap-2">
+                                                    {field.value.map((task, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="flex items-center gap-1 rounded-full border px-3 py-1 text-xs"
+                                                        >
+                                                            {task}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    if(!subtasks.trim()) return;
+                                                                    if(subtasks.length>=5) return;
+                                                                    field.onChange(
+                                                                        field.value.filter((_, i) => i !== index)
+                                                                    )
+                                                                }
+                                                                    
+                                                                }
+                                                            >
+                                                                <X className="h-3 w-3" />
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                </div>
+
+                                                {/* input + plus */}
+                                                <div className="flex items-center gap-2">
+                                                    <Input
+                                                        placeholder="Enter user name"
+                                                        value={subtasks}
+                                                        onChange={(e) => setsubtasks(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") {
+                                                                e.preventDefault()
+                                                                if(subtasks.length>=5) return;
+                                                                if (!subtasks.trim()) return
+                                                                field.onChange([...field.value, subtasks.trim()])
+                                                                setsubtasks("")
+                                                            }
+                                                        }}
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() => {
+                                                            if (!subtasks.trim()) return
+                                                            field.onChange([...field.value, subtasks.trim()])
+                                                            setsubtasks("")
+                                                        }}
+                                                    >
+                                                        <Plus size={18} />
+                                                    </Button>
+                                                </div>
+
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                {/*  */}
+                                <div className="flex items-center justify-center gap-3">
+                                    {/* status */}
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="status"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="w-44">
+                                                                <SelectValue placeholder="Select status" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            <SelectItem value="TODO">Todo</SelectItem>
+                                                            <SelectItem value="IN_PROGRESS">In progress</SelectItem>
+                                                            <SelectItem value="DONE">Done</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    {/* priority */}
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="priority"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="w-44">
+                                                                <SelectValue placeholder="Select priority" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            <SelectItem value="LOW">Low</SelectItem>
+                                                            <SelectItem value="MEDIUM">Medium</SelectItem>
+                                                            <SelectItem value="HIGH">High</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+                                {/*  */}
+                                <Button type="submit">Create task</Button>
                             </div>
-                        </div>
-                        {/* tags */}
-                        <div className="grid gap-3">
-                            <Label htmlFor="assignedTo">Tags</Label>
-                            <div className="flex items-center gap-2">
-                                <Input id="tags" placeholder="Enter a tag" />
-                                <Button variant={'outline'} className="cursor-pointer shadow">
-                                    <Plus size={20} />
-                                </Button>
-                            </div>
-                        </div>
-                        {/*  */}
-                        <div className="flex items-center justify-center gap-3">
-                            {/* status */}
-                            <div className="grid gap-3">
-                                <Label htmlFor="description">Status</Label>
-                                <Select>
-                                    <SelectTrigger className="w-44">
-                                        <SelectValue placeholder="Select a status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Status</SelectLabel>
-                                            <SelectItem value="TODO">Todo</SelectItem>
-                                            <SelectItem value="IN_PROGRESS">In progress</SelectItem>
-                                            <SelectItem value="DONE">Done</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            {/* priority */}
-                            <div className="grid gap-3">
-                                <Label htmlFor="description">Priority</Label>
-                                <Select>
-                                    <SelectTrigger className="w-44">
-                                        <SelectValue placeholder="Select a priority" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Status</SelectLabel>
-                                            <SelectItem value="LOW">Low</SelectItem>
-                                            <SelectItem value="MEDIUM">Medium</SelectItem>
-                                            <SelectItem value="HIGH">High</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        {/*  */}
-                    </div>
-                    <SheetFooter>
-                        <Button type="submit">Create task</Button>
-                    </SheetFooter>
+                        </form>
+                    </Form>
                 </SheetContent>
             </Sheet>
         </>

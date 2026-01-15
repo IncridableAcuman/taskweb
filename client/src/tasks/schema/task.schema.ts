@@ -1,15 +1,13 @@
-import {z} from 'zod';
+import { z } from 'zod';
 
 const TaskSchema = z.object({
-    title:z.string().min(3,"Title must be geater than 3 characters.")
-    .max(50,"Title must be less than 50 characters."),
-    description:z.string().min(5,"Description must be greater than 5 characters.")
-    .max(150,"Description must be less than 150 characters."),
-    status:z.string(),
-    priority:z.string(),
-    dueDate:z.string(),
-    assignedTo:z.string().array(),
-    tags:z.string().array(), 
+  title: z.string().min(3).max(50),
+  description: z.string().min(5).max(150).optional(),
+  status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+  dueDate: z.date().optional(),
+  assignedTo: z.array(z.string()).min(1, "At least one user required").max(5,"Assigned To must be less than 5"),
+  subtasks:  z.array(z.string()).min(1, "At least one subtasks required").max(5,"Subtasks must be less than 5"),
+})
 
-});
 export default TaskSchema;

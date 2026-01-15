@@ -7,7 +7,7 @@ export default interface ITask {
     dueDate:string,
     assignedTo:string[],
     userId:string,
-    tags:string[],
+    subtasks:string[],
     createdAt:string,
     updatedAt:string
 }
