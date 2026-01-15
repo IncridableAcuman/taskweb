@@ -1,18 +1,20 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ForgotPasswordDialog from "../components/ForgotPasswordDialog"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import LoginSchema from "@/auth/schema/login.schema"
 import { zodResolver } from '@hookform/resolvers/zod'
 import axiosInstance from "@/api/axiosInstance"
+import { toast } from "sonner"
 
 const Login = () => {
   const [forgotPassword, setForgotPassword] = useState(false);
+  const navigate = useNavigate();
   const form = useForm<z.input<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -21,14 +23,23 @@ const Login = () => {
     }
   });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (value: z.infer<typeof LoginSchema>) => {
     try {
-      const {data} = await axiosInstance.post("/login",form);
-      console.log(data);
+      const {data} = await axiosInstance.post("/auth/login",value);
+      localStorage.setItem("accessToken",data.accessToken);
+      toast.success("Successfully");
+      navigate("/");
     } catch (error) {
       console.log(error);
+      toast.error("Login failed.");
     }
   }
+
+  useEffect(()=>{
+    if(localStorage.getItem("accessToken")){
+      navigate("/");
+    }
+  },[navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center w-full pt-24">

@@ -21,9 +21,9 @@ const Register = () => {
         }
     });
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (value:z.infer<typeof RegisterSchema>) => {
         try {
-            const {data} = await axiosInstance.post("/register",form);
+            const {data} = await axiosInstance.post("/register",value);
             console.log(data);
         } catch (error) {
             console.log(error);
