@@ -13,6 +13,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { useState } from "react"
+import axiosInstance from "@/api/axiosInstance"
 
 const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpen: (val: boolean) => void }) => {
     const [assignedInput, setAssignedInput] = useState("");
@@ -28,6 +29,15 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
             subtasks: [],
         },
     })
+
+    const handleSubmit =  async () => {
+        try {
+            const {data} = await axiosInstance.post("/tasks",form);
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
 
     return (
@@ -50,7 +60,7 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                         <SheetDescription>Create and complete a task</SheetDescription>
                     </SheetHeader>
                     <Form {...form}>
-                        <form>
+                        <form onSubmit={form.handleSubmit(handleSubmit)}>
                             <div className="grid flex-1 auto-rows-min gap-6 px-4">
                                 {/* title */}
                                 <div className="grid gap-3">
@@ -60,7 +70,8 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <Input id="title" placeholder="Your task title" {...field} />
+                                                    <Input id="title"
+                                                     placeholder="Your task title" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
