@@ -29,16 +29,13 @@ public class Task {
 
     private TaskPriority priority;
 
-    private List<String> assignedTo;
-
-    private List<String> subtasks;
-
-    @CreatedDate
     private LocalDate dueDate;
 
-    @LastModifiedDate
     private String userId;
 
+    @CreatedDate
     private LocalDate createdAt;
+
+    @LastModifiedDate
     private LocalDate updatedAt;
 }

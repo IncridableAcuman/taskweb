@@ -4,7 +4,6 @@ import com.backend.web.enums.TaskPriority;
 import com.backend.web.enums.TaskStatus;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public record TaskResponse(
         String id,
@@ -14,8 +13,6 @@ public record TaskResponse(
         TaskStatus status,
         TaskPriority priority,
         LocalDate dueDate,
-        List<String> assignedTo,
-        List<String> subtasks,
         LocalDate createdAt,
         LocalDate updatedAt
 ) {

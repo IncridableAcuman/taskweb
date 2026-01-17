@@ -31,8 +31,6 @@ public class TaskService {
                 task.getStatus(),
                 task.getPriority(),
                 task.getDueDate(),
-                task.getAssignedTo(),
-                task.getSubtasks(),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );
@@ -50,10 +48,8 @@ public class TaskService {
         task.setPriority(request.getPriority());
         task.setUserId(user.getId());
         task.setDueDate(request.getDueDate());
-        task.setAssignedTo(request.getAssignedTo());
         task.setCreatedAt(LocalDate.now());
         task.setUpdatedAt(LocalDate.now());
-        task.setSubtasks(request.getSubtasks());
         task = taskRepository.save(task);
         return taskResponse(task);
     }
@@ -86,8 +82,6 @@ public class TaskService {
         task.setUserId(user.getId());
         task.setPriority(request.getPriority());
         task.setDueDate(request.getDueDate());
-        task.setAssignedTo(request.getAssignedTo());
-        task.setSubtasks(request.getSubtasks());
         task.setUpdatedAt(LocalDate.now());
         taskRepository.save(task);
         return taskResponse(task);
