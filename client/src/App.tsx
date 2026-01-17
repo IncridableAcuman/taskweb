@@ -4,6 +4,7 @@ import Layout from "./layout/Layout"
 import Login from "./auth/ui/pages/Login"
 import { Toaster } from "sonner"
 import Register from "./auth/ui/pages/Register"
+import ResetPassword from "./auth/ui/pages/ResetPassword"
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword/>} />
       </Routes>
     </>
   )

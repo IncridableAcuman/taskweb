@@ -4,10 +4,27 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useState } from "react"
 import SearchDialog from "./SearchDialog"
 import { Avatar, AvatarFallback, AvatarImage } from "../avatar"
+import { toast } from "sonner"
+import axiosInstance from "@/api/axiosInstance"
+import { useNavigate } from "react-router-dom"
 
 const Navbar = () => {
     const [menuOpen,setMenuOpen] = useState(false);
     const [search,setSearch]=useState(false);
+    const navigate = useNavigate();
+
+    const handleSubmit = async () => {
+        try {
+            const {data} = await axiosInstance.post("/auth/logout");
+            toast.success(data || "Logged out successfully.");
+            localStorage.removeItem("accessToken");
+            navigate("/login");
+        } catch (error) {
+            console.log(error);
+            toast.error("Logged out failed.");
+        }
+    }
+
     return (
         <div className="flex items-center justify-between gap-4 sm:gap-6 md:gap-8 lg:gap-10 p-4">
             <div className="flex items-center gap-3">
@@ -31,7 +48,7 @@ const Navbar = () => {
                         <DropdownMenuItem className="flex items-center gap-2"><User size={20} />Profile</DropdownMenuItem>
                         <DropdownMenuItem className="flex items-center gap-2"><PanelTop size={20} />Billing</DropdownMenuItem>
                         <DropdownMenuItem className="flex items-center gap-2"><UsersRound size={20} /> Team</DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center gap-2"><LogOut size={20} /> Log out</DropdownMenuItem>
+                        <DropdownMenuItem className="flex items-center gap-2" onClick={handleSubmit}><LogOut size={20} /> Log out</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

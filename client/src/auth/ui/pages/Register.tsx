@@ -8,6 +8,7 @@ import RegisterSchema from "@/auth/schema/regiter.schema"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { Link } from "react-router-dom";
 import axiosInstance from "@/api/axiosInstance";
+import { toast } from "sonner";
 
 const Register = () => {
     const form = useForm<z.input<typeof RegisterSchema>>({
@@ -27,6 +28,7 @@ const Register = () => {
             console.log(data);
         } catch (error) {
             console.log(error);
+            toast.error("Email or password error.");
         }
     }
 
