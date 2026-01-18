@@ -1,48 +1,28 @@
-import { Checkbox } from "@/components/ui/checkbox"
-import { Bell, Calendar, Star } from "lucide-react"
-import { useState } from "react"
+import { UseTasks } from "@/provider/TaskProvider";
+import TaskItem from "../components/TaskItem";
 
-const TaskList = ({setView}:{view:boolean,setView:(view:boolean)=>void}) => {
-    const [active,setActive] = useState(false);
-    return (
-        <>
-            <div className="flex items-center justify-between gap-3 bg-white shadow p-4 border border-gray-300 rounded-md
-             hover:shadow-md transition duration-300 cursor-pointer" >
-                <div className="flex items-center gap-3">
-                    <Checkbox />
-                    <div className="space-y-2">
-                        <h1 className="flex items-center gap-3">Sheet Title Design homepage layout <span> <Star size={18} onClick={()=>setActive(!active)}
-                         className={`cursor-pointer transition-colors ${active ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`} /> </span></h1>
-                        <div onClick={()=>setView(true)}>
-                            <div className="block md:hidden">
-                                <div className=" text-xs flex items-center gap-2">
-                                    <p className="bg-sky-200 text-sky-600 p-1 rounded">In Progress</p>
-                                    <p className="bg-amber-800 text-white p-1 rounded">High</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3 text-xs">
-                            <p>John Doe</p>
-                            <p className="flex items-center gap-1.5">
-                                <Calendar size={10} />
-                                <span>Jan 13,2026</span>
-                            </p>
-                            <p className="flex items-center gap-1.5">
-                                <Bell size={10} />
-                                <span>Subtasks: 1/2</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div className="hidden md:block" onClick={()=>setView(true)}>
-                    <div className=" text-xs flex items-center gap-2">
-                        <p className="bg-sky-200 text-sky-600 p-1 rounded">In Progress</p>
-                        <p className="bg-amber-800 text-white p-1 rounded">High</p>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
+interface TaskListProps {
+  setView: (view: boolean) => void;
 }
 
-export default TaskList
+const TaskList = ({ setView }: TaskListProps) => {
+  const { tasks } = UseTasks();
+
+  if (!tasks.length) {
+    return <p className="text-center text-gray-500">No tasks found</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {tasks.map(task => (
+        <TaskItem
+          key={task.id}
+          task={task}
+          onOpen={() => setView(true)}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default TaskList;

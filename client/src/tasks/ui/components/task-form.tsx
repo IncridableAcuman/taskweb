@@ -11,10 +11,13 @@ import { Plus } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import axiosInstance from "@/api/axiosInstance"
+import { toast } from "sonner"
+import { UseTasks } from "@/provider/TaskProvider"
 
 const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpen: (val: boolean) => void }) => {
+    const {taskList} = UseTasks();
     const form = useForm<z.input<typeof TaskSchema>>({
         resolver: zodResolver(TaskSchema),
         defaultValues: {
@@ -25,12 +28,24 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
         },
     })
 
-    const handleSubmit =  async () => {
+    const handleSubmit = async (value: z.infer<typeof TaskSchema>) => {
         try {
-            const {data} = await axiosInstance.post("/tasks",form);
-            console.log(data);
+            const { data } = await axiosInstance.post("/tasks", value);
+            toast.success("Task created successfully");
+            if (data) {
+                setSheetOpen(false);
+                form.reset({
+                    title: "",
+                    description: "",
+                    dueDate: undefined,
+                    status: "TODO",
+                    priority: "MEDIUM"
+                });
+                taskList();
+            }
         } catch (error) {
             console.log(error);
+            toast.error("Task crating failed");
         }
     }
 
@@ -64,9 +79,10 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                                         name="title"
                                         render={({ field }) => (
                                             <FormItem>
+                                                <FormLabel htmlFor="title">Title</FormLabel>
                                                 <FormControl>
                                                     <Input id="title"
-                                                     placeholder="Your task title" {...field} />
+                                                        placeholder="Your task title" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -80,6 +96,7 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                                         name="description"
                                         render={({ field }) => (
                                             <FormItem>
+                                                <FormLabel htmlFor="description">Description</FormLabel>
                                                 <FormControl>
                                                     <Textarea id="description" placeholder="Something content" {...field} />
                                                 </FormControl>
@@ -96,6 +113,7 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                                         name="dueDate"
                                         render={({ field }) => (
                                             <FormItem>
+                                                <FormLabel htmlFor="dueDate">Due Date</FormLabel>
                                                 <Popover>
                                                     <PopoverTrigger asChild>
                                                         <FormControl>
@@ -127,6 +145,7 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                                             name="status"
                                             render={({ field }) => (
                                                 <FormItem>
+                                                    <FormLabel htmlFor="status">Status</FormLabel>
                                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                         <FormControl>
                                                             <SelectTrigger className="w-44">
@@ -151,6 +170,7 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                                             name="priority"
                                             render={({ field }) => (
                                                 <FormItem>
+                                                    <FormLabel>Priority</FormLabel>
                                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                         <FormControl>
                                                             <SelectTrigger className="w-44">
