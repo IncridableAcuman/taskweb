@@ -1,5 +1,4 @@
 import TaskSheet from "@/tasks/ui/components/task-form";
-import TaskRadioGroup from "@/tasks/ui/components/radio-group";
 import TaskList from "@/tasks/ui/pages/TaskList";
 import ViewTask from "@/tasks/ui/components/view-task";
 import { useEffect, useState } from "react";
@@ -8,7 +7,6 @@ import type ITask from "@/tasks/interface/task.interface";
 
 const Home = () => {
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [active, setActive] = useState<"list" | "panel">("list");
   const [view, setView] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 
@@ -24,7 +22,6 @@ const Home = () => {
     <>
       <h1 className="text-xl md:text-2xl font-semibold">Todo List</h1>
 
-      <TaskRadioGroup active={active} setActive={setActive} />
 
       <div className="pt-5">
         <TaskList
@@ -40,7 +37,6 @@ const Home = () => {
         setView={setView}
         task={selectedTask}
       />
-
 
       <div className="fixed bottom-5 right-3">
         <TaskSheet sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} />

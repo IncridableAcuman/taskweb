@@ -22,8 +22,8 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
     const form = useForm<z.input<typeof TaskSchema>>({
         resolver: zodResolver(TaskSchema),
         defaultValues: {
-            title: "",
-            description: "",
+            title: task?.title,
+            description: task?.description,
             status: "TODO",
             priority: "MEDIUM",
         },
@@ -31,7 +31,7 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
 
     const handleSubmit = async (value: z.infer<typeof TaskSchema>) => {
         try {
-            const { data } = await axiosInstance.post("/tasks", value);
+            const { data } = await axiosInstance.patch(`/tasks/${task.id}`, value);
             toast.success("Task created successfully");
             if (data) {
                 setSheetOpen(false);
@@ -39,14 +39,14 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                     title: "",
                     description: "",
                     dueDate: undefined,
-                    status: "TODO",
+                    status: "DONE",
                     priority: "MEDIUM"
                 });
                 taskList();
             }
         } catch (error) {
             console.log(error);
-            toast.error("Task crating failed");
+            toast.error("Task editing failed");
         }
     }
 
@@ -75,12 +75,12 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                                     <FormField
                                         control={form.control}
                                         name="title"
-                                        render={() => (
+                                        render={({field}) => (
                                             <FormItem>
                                                 <FormLabel htmlFor="title">Title</FormLabel>
                                                 <FormControl>
                                                     <Input id="title"
-                                                        placeholder="Your task title" value={task.title} />
+                                                        placeholder="Your task title" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -92,11 +92,11 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                                     <FormField
                                         control={form.control}
                                         name="description"
-                                        render={() => (
+                                        render={({field}) => (
                                             <FormItem>
                                                 <FormLabel htmlFor="description">Description</FormLabel>
                                                 <FormControl>
-                                                    <Textarea id="description" placeholder="Something content" value={task.description} />
+                                                    <Textarea id="description" placeholder="Something content" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -116,8 +116,8 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                                                     <PopoverTrigger asChild>
                                                         <FormControl>
                                                             <Button variant="outline" className="justify-start">
-                                                                {task.dueDate
-                                                                    ? task.dueDate
+                                                                {field.value
+                                                                    ? field.name
                                                                     : "Select a date"}
                                                             </Button>
                                                         </FormControl>
@@ -169,7 +169,7 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Priority</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <Select onValueChange={field.onChange}>
                                                         <FormControl>
                                                             <SelectTrigger className="w-44">
                                                                 <SelectValue placeholder="Select priority" />
@@ -188,7 +188,7 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                                     </div>
                                 </div>
                                 {/*  */}
-                                <Button type="submit">Create task</Button>
+                                <Button type="submit">Edit task</Button>
                             </div>
                         </form>
                     </Form>

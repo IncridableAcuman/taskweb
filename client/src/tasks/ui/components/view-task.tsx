@@ -1,3 +1,4 @@
+import axiosInstance from "@/api/axiosInstance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,9 +11,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { UseTasks } from "@/provider/TaskProvider";
 import type ITask from "@/tasks/interface/task.interface";
-import { useState } from "react";
+import { Trash } from "lucide-react";
+import { toast } from "sonner";
 import EditForm from "./edit-form";
+import { useState } from "react";
 
 interface ViewTaskProps {
   view: boolean;
@@ -21,8 +25,22 @@ interface ViewTaskProps {
 }
 
 const ViewTask = ({ view, setView, task }: ViewTaskProps) => {
-  const [open,setOpen] = useState(false);
-  if (!task) return null;
+  const {taskList} = UseTasks();
+  const [open,setOpen]=useState(false);
+
+    if (!task) return null;
+
+  const handleSubmit = async () => {
+    try {
+      await axiosInstance.delete(`/tasks/${task.id}`);
+      toast.success("Task deleted successfully");
+      taskList();
+      setView(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Task don't deleted");
+    }
+  }
 
   return (
     <Sheet open={view} onOpenChange={setView}>
@@ -30,11 +48,15 @@ const ViewTask = ({ view, setView, task }: ViewTaskProps) => {
         <SheetHeader>
           <div className="flex items-center justify-between gap-3 pt-5">
             <SheetTitle>{task.title}</SheetTitle>
-            <EditForm sheetOpen={open} setSheetOpen={setOpen} />
+            <EditForm sheetOpen={open} setSheetOpen={setOpen} task={task} />
           </div>
           <SheetDescription className="flex items-center gap-3 pt-3">
-            <p className="bg-sky-500 text-white text-xs p-1.5 rounded">{task.status.slice(0, 1).concat(task.status.slice(1, task.status.length).toLowerCase())}</p>
-            <p className="bg-amber-500 text-white text-xs p-1.5 rounded">{task.priority.slice(0, 1).concat(task.priority.slice(1, task.priority.length).toLowerCase())}</p>
+            <button className="bg-sky-500 text-white text-xs p-1.5 rounded">{task.status.slice(0, 1).concat(task.status.slice(1, task.status.length).toLowerCase())}</button>
+            <button className="bg-amber-500 text-white text-xs p-1.5 rounded">{task.priority.slice(0, 1).concat(task.priority.slice(1, task.priority.length).toLowerCase())}</button>
+            <Button variant={'ghost'} size={'icon-sm'} className="cursor-pointer"
+             onClick={handleSubmit}>
+              <Trash size={18} className="text-red-500 fill" fill={'currentColor'} />
+            </Button>
           </SheetDescription>
         </SheetHeader>
 
@@ -46,13 +68,13 @@ const ViewTask = ({ view, setView, task }: ViewTaskProps) => {
 
           <div className="space-y-2 flex items-center justify-between ga3">
             <div className="space-y-2">
-              <Label>Due Date</Label>
-              <p >{task.dueDate}</p>
+              <Label>Updated At</Label>
+              <p >{task.updatedAt.slice(0, 10)}</p>
             </div>
 
             <div className="space-y-2">
               <Label>Created At</Label>
-              <p>{task.createdAt.slice(0,10)}</p>
+              <p>{task.createdAt.slice(0, 10)}</p>
             </div>
           </div>
 
