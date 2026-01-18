@@ -15,10 +15,14 @@ import axiosInstance from "@/api/axiosInstance"
 import { toast } from "sonner"
 import { UseTasks } from "@/provider/TaskProvider"
 import type ITask from "@/tasks/interface/task.interface"
+import { useState } from "react"
+import { Spinner } from "@/components/ui/spinner"
 
-const EditForm = ({ sheetOpen, setSheetOpen,task }: 
-    { sheetOpen: boolean, setSheetOpen: (val: boolean) => void, task:ITask }) => {
-    const {taskList} = UseTasks();
+const EditForm = ({ sheetOpen, setSheetOpen, task }:
+    { sheetOpen: boolean, setSheetOpen: (val: boolean) => void, task: ITask }) => {
+    const { taskList } = UseTasks();
+    const [loading, setLoading] = useState(false);
+
     const form = useForm<z.input<typeof TaskSchema>>({
         resolver: zodResolver(TaskSchema),
         defaultValues: {
@@ -28,9 +32,11 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
             priority: "MEDIUM",
         },
     })
+    const sleep = (ms:number) => new Promise(resolve=> setTimeout(resolve,ms));
 
     const handleSubmit = async (value: z.infer<typeof TaskSchema>) => {
         try {
+            setLoading(true);
             const { data } = await axiosInstance.patch(`/tasks/${task.id}`, value);
             toast.success("Task created successfully");
             if (data) {
@@ -42,11 +48,14 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                     status: "DONE",
                     priority: "MEDIUM"
                 });
+                await sleep(2000);
                 taskList();
             }
         } catch (error) {
             console.log(error);
             toast.error("Task editing failed");
+        } finally{
+            setLoading(false);
         }
     }
 
@@ -75,7 +84,7 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                                     <FormField
                                         control={form.control}
                                         name="title"
-                                        render={({field}) => (
+                                        render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel htmlFor="title">Title</FormLabel>
                                                 <FormControl>
@@ -92,7 +101,7 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                                     <FormField
                                         control={form.control}
                                         name="description"
-                                        render={({field}) => (
+                                        render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel htmlFor="description">Description</FormLabel>
                                                 <FormControl>
@@ -188,7 +197,12 @@ const EditForm = ({ sheetOpen, setSheetOpen,task }:
                                     </div>
                                 </div>
                                 {/*  */}
-                                <Button type="submit">Edit task</Button>
+                                <Button type="submit">
+                                    {loading ? <p className="flex items-center gap-2">
+                                        <Spinner/>
+                                        Loading...
+                                    </p> : "Edit task"}
+                                </Button>
                             </div>
                         </form>
                     </Form>

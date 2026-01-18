@@ -11,9 +11,11 @@ import LoginSchema from "@/auth/schema/login.schema"
 import { zodResolver } from '@hookform/resolvers/zod'
 import axiosInstance from "@/api/axiosInstance"
 import { toast } from "sonner"
+import { Spinner } from "@/components/ui/spinner"
 
 const Login = () => {
   const [forgotPassword, setForgotPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const form = useForm<z.input<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -23,23 +25,29 @@ const Login = () => {
     }
   });
 
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   const handleSubmit = async (value: z.infer<typeof LoginSchema>) => {
     try {
-      const {data} = await axiosInstance.post("/auth/login",value);
-      localStorage.setItem("accessToken",data.accessToken);
+      setLoading(true)
+      const { data } = await axiosInstance.post("/auth/login", value);
+      localStorage.setItem("accessToken", data.accessToken);
       toast.success("Successfully");
+      await sleep(1000);
       navigate("/");
     } catch (error) {
       console.log(error);
       toast.error("Email or password error");
+    } finally {
+      setLoading(false);
     }
   }
 
-  useEffect(()=>{
-    if(localStorage.getItem("accessToken")){
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
       navigate("/");
     }
-  },[navigate]);
+  }, [navigate]);
+
 
   return (
     <div className="flex flex-col items-center justify-center w-full pt-24">
@@ -71,7 +79,7 @@ const Login = () => {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage/>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -83,23 +91,25 @@ const Login = () => {
                     </Button>
                   </div>
                   <FormField
-                  control={form.control}
-                  name="password"
-                  render={({field})=>(
-                    <FormItem>
-                      <FormControl>
-                        <Input id="password" type="password" placeholder="xxxxxxxx" {...field} />
-                      </FormControl>
-                      <FormMessage/>
-                    </FormItem>
-                  )}
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input id="password" type="password" placeholder="xxxxxxxx" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                   <ForgotPasswordDialog forgotPassword={forgotPassword} setForgotPassword={setForgotPassword} />
                 </div>
               </div>
               <div className="grid gap-2 pt-4">
                 <Button type="submit" className="w-full">
-                  Login
+                  {loading ? <p className="flex items-center gap-2">
+                    <Spinner />
+                    Loading...</p> : "Login"}
                 </Button>
               </div>
             </form>

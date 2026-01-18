@@ -6,20 +6,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "../avatar"
 import { toast } from "sonner"
 import axiosInstance from "@/api/axiosInstance"
 import { useNavigate } from "react-router-dom"
+import { Spinner } from "../spinner"
 
 const Navbar = () => {
-    const [menuOpen,setMenuOpen] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
+    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async () => {
         try {
-            const {data} = await axiosInstance.post("/auth/logout");
+            setLoading(true);
+            const { data } = await axiosInstance.post("/auth/logout");
             toast.success(data || "Logged out successfully.");
+            await sleep(1000);
             localStorage.removeItem("accessToken");
             navigate("/login");
         } catch (error) {
             console.log(error);
             toast.error("Logged out failed.");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -42,7 +49,12 @@ const Navbar = () => {
                         <DropdownMenuItem className="flex items-center gap-2"><User size={20} />Profile</DropdownMenuItem>
                         <DropdownMenuItem className="flex items-center gap-2"><PanelTop size={20} />Billing</DropdownMenuItem>
                         <DropdownMenuItem className="flex items-center gap-2"><UsersRound size={20} /> Team</DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center gap-2" onClick={handleSubmit}><LogOut size={20} /> Log out</DropdownMenuItem>
+                        <DropdownMenuItem className="flex items-center gap-2" onClick={handleSubmit}><LogOut size={20} /> {
+                            loading ? <p className="flex items-center gap-2">
+                                <Spinner />
+                                Loading...
+                            </p> : "Log out"
+                        } </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

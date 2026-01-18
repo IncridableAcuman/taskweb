@@ -9,8 +9,11 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Link } from "react-router-dom";
 import axiosInstance from "@/api/axiosInstance";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 const Register = () => {
+    const [loading, setLoading] = useState(false);
     const form = useForm<z.input<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
@@ -21,14 +24,18 @@ const Register = () => {
             password: ""
         }
     });
-
-    const handleSubmit = async (value:z.infer<typeof RegisterSchema>) => {
+    const sleep = (ms:number) => new Promise(resolve=> setTimeout(resolve,ms));
+    const handleSubmit = async (value: z.infer<typeof RegisterSchema>) => {
         try {
-            const {data} = await axiosInstance.post("/register",value);
+            setLoading(true);
+            const { data } = await axiosInstance.post("/register", value);
+            await sleep(2000);
             console.log(data);
         } catch (error) {
             console.log(error);
             toast.error("Email or password error.");
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -154,7 +161,9 @@ const Register = () => {
                             </div>
                             <div className="grid gap-2 pt-4">
                                 <Button type="submit" className="w-full">
-                                    Register
+                                    {loading ? <p className="flex items-center gap-2">
+                                        <Spinner />
+                                        Loading...</p> : "Register"}
                                 </Button>
                             </div>
                         </form>

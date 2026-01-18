@@ -21,12 +21,12 @@ axiosInstance.interceptors.response.use(
     async (error)=>{
         const originalRequest = error.config;
 
-        if(error.response.status === 401 && !originalRequest._retry){
+        if((error.response.status === 401 || error.response.status === 403) && !originalRequest._retry){
             originalRequest._retry=true;
             try {
                 const {data} = await axiosInstance.get("/auth/refresh");
                 localStorage.setItem("accessToken",data.accessToken);
-                error.config['Authorization']=`Bearer ${data.accessToken}`;
+                originalRequest.config['Authorization']=`Bearer ${data.accessToken}`;
                 return axiosInstance.request(originalRequest);
             } catch (error) {
                 console.log(error);

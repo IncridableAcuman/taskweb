@@ -15,9 +15,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import axiosInstance from "@/api/axiosInstance"
 import { toast } from "sonner"
 import { UseTasks } from "@/provider/TaskProvider"
+import { useState } from "react"
+import { Spinner } from "@/components/ui/spinner"
 
 const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpen: (val: boolean) => void }) => {
     const {taskList} = UseTasks();
+    const [loading, setLoading] = useState(false);
     const form = useForm<z.input<typeof TaskSchema>>({
         resolver: zodResolver(TaskSchema),
         defaultValues: {
@@ -27,11 +30,14 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
             priority: "MEDIUM",
         },
     })
+    const sleep = (ms:number) => new Promise(resolve=> setTimeout(resolve,ms));
 
     const handleSubmit = async (value: z.infer<typeof TaskSchema>) => {
         try {
+            setLoading(true);
             const { data } = await axiosInstance.post("/tasks", value);
             toast.success("Task created successfully");
+            await sleep(2000);
             if (data) {
                 setSheetOpen(false);
                 form.reset({
@@ -46,6 +52,8 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
         } catch (error) {
             console.log(error);
             toast.error("Task crating failed");
+        } finally{
+            setLoading(false);
         }
     }
 
@@ -117,7 +125,7 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                                                 <Popover>
                                                     <PopoverTrigger asChild>
                                                         <FormControl>
-                                                            <Button variant="outline" className="justify-start">
+                                                            <Button type="button" variant="outline" className="justify-start">
                                                                 {field.value
                                                                     ? field.value.toDateString()
                                                                     : "Select a date"}
@@ -190,7 +198,10 @@ const TaskForm = ({ sheetOpen, setSheetOpen }: { sheetOpen: boolean, setSheetOpe
                                     </div>
                                 </div>
                                 {/*  */}
-                                <Button type="submit">Create task</Button>
+                                <Button type="submit">{loading ? <p className="flex items-center gap-2">
+                                    <Spinner/>
+                                    Loading...
+                                </p> : "Create task"}</Button>
                             </div>
                         </form>
                     </Form>

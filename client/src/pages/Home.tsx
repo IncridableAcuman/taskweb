@@ -4,11 +4,13 @@ import ViewTask from "@/tasks/ui/components/view-task";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type ITask from "@/tasks/interface/task.interface";
+import { UseTasks } from "@/provider/TaskProvider";
 
 const Home = () => {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [view, setView] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+  const {taskList} = UseTasks();
 
   const navigate = useNavigate();
 
@@ -17,6 +19,12 @@ const Home = () => {
       navigate("/login");
     }
   }, [navigate]);
+
+  useEffect(()=>{
+    if(localStorage.getItem("accessToken")){
+      taskList();
+    }
+  },[taskList]);
 
   return (
     <>
