@@ -1,22 +1,17 @@
-FROM gradle:8.5-jdk17 AS build
-
-LABEL author="Soft Uzbek Slogan"
+FROM gradle:8.5-jdk17-slim AS builder
 
 WORKDIR /app
 
-COPY build.gradle .
-COPY settings.gradle .
+COPY . .
 
-COPY src ./src
+RUN gradle bootJar --no-daemon
 
-RUN gradle bootJar
-
-FROM openjdk:17-jre-slim AS runtime
+FROM aclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
 EXPOSE 8080
 
-CMD [ "java", "-jar", "/app/app.jar" ]
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
