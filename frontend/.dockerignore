@@ -1,0 +1,22 @@
+# node
+node_modules
+npm-debug.log*
+
+# build output (Docker ichida qayta build qilinadi)
+dist
+build
+
+# env
+.env
+
+# git
+.git
+.gitignore
+
+# editor / os
+.vscode
+.idea
+
+# docker
+Dockerfile
+docker-compose.yml

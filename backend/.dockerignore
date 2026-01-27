@@ -1,0 +1,22 @@
+# gradle
+.gradle
+build
+
+# local env
+.env
+
+# logs
+logs
+*.log
+
+# git
+.git
+.gitignore
+
+# editor / os
+.vscode
+.idea
+
+# docker
+Dockerfile
+docker-compose.yml

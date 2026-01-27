@@ -1,12 +1,12 @@
-FROM gradle:8.5-jdk17-slim AS builder
+FROM gradle:8-jdk17 AS builder
 
 WORKDIR /app
 
 COPY . .
 
-RUN gradle bootJar --no-daemon
+RUN gradle bootJar --no-daemon -x test
 
-FROM aclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 

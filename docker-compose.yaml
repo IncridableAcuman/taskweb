@@ -1,3 +1,24 @@
 services:
   backend:
+    build: ./backend
+    container_name: spring-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    networks:
+      - app-net
+  
   frontend:
+    build: ./frontend
+    container_name: spring-frontend
+    ports:
+      - "5000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
